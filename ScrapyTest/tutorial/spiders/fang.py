@@ -15,25 +15,30 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor as sle
 import codecs
 import MySQLdb
 
-class TiebaSpider(scrapy.Spider):
-    name = "tieba"
-    allowed_dmains = ["tieba.baidu.com"]
-    start_urls = ["http://tieba.baidu.com/p/4517031091?pn=1&ajax=1&t=1455292481894"]
+class FangSpider(scrapy.Spider):
+    name = "fang"
+    allowed_dmains = ["http://esf.sh.fang.com"]
+    start_urls = ["http://esf.sh.fang.com/house-a025-b05235/kw%c6%d6%b6%ab%b6%fe%ca%d6%b7%bf/"]
 
-    rules = [
-        Rule(sle(allow=("/p/4479212761\?pn=\d{,4}&ajax=1&t=1455292481894")), follow=True, callback='parse')
-    ] 
+    #rules = [
+    #    Rule(sle(allow=("/p/4479212761\?pn=\d{,4}&ajax=1&t=1455292481894")), follow=True, callback='parse')
+    #] 
 
     def parse(self,response):
          #items = [];
          #for 
 
-                sel =  response.xpath("//div[contains(@class,'l_post')]")[0]
+                sel =  response.xpath("//dd[contains(@class,'info')]")[0]
                 item = TiebaItem()
-                item['userId'] = sel.xpath("//a[contains(@class,'p_author_name')]/text()").extract()
-                item['level'] = sel.xpath("//div[contains(@class,'d_badge_lv')]/text()").extract()
-                item['content'] = sel.xpath("//div[contains(@class,'j_d_post_content')]").extract()
-                links = sel.xpath("//li[contains(@class,'l_pager')]/span/following-sibling::a/attribute::href").extract()
+                item['userId'] = sel.xpath("//span[contains(@class,'price')]/text()").extract()
+                print item['userId']
+                item['level'] = sel.xpath("//div[contains(@class,'area')]/p[1]/text()").extract()
+                print item['level']
+                item['content'] = sel.xpath("//p[contains(@class,'mt10')]/a/span/text()").extract()
+                print item['content']
+                item['page'] = sel.xpath("//div[contains(@class,'fanye')]/a[contains(@class,'pageNow')]/text()").extract()
+                links = sel.xpath("//div[contains(@class,'fanye')]/text()").extract()
+                print item['page']
                 str = None
                 if(len(links)>0):
                     str =links[0]
@@ -54,7 +59,7 @@ class TiebaSpider(scrapy.Spider):
                 line = json.dumps(dict(item), ensure_ascii=False) + "\n"
                 file.write(line)
                 file.close()
-                try:
+                '''try:
                     conn=MySQLdb.connect(host='localhost',user='root',passwd='wang',db='test',port=3306,charset='utf8')
                     cur=conn.cursor()
                     cur.execute('select ifnull(max(id),0) id from tieba')
@@ -110,6 +115,7 @@ class TiebaSpider(scrapy.Spider):
                 except MySQLdb.Error,e:
                      print "Mysql Error %d: %s" % (e.args[0], e.args[1])
                 #MySQLdb.connect("")
+                '''
     		#print items
     		#yield scrapy.Request('http://tieba.baidu.com'+str+'&ajax=1&t=1455292481894', callback=self.parse)
     		#print items > a.txt           

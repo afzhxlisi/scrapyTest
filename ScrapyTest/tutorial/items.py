@@ -18,5 +18,6 @@ class TiebaItem(scrapy.Item):
     userId = scrapy.Field()
     level = scrapy.Field()
     content = scrapy.Field()
+    page = scrapy.Field()
     #pic = scrapy.Field()
     #dateTime = scrapy.Field()
