@@ -37,8 +37,9 @@ class FangSpider(scrapy.Spider):
                 item['content'] = sel.xpath("//p[contains(@class,'mt10')]/a/span/text()").extract()
                 print item['content']
                 item['page'] = sel.xpath("//div[contains(@class,'fanye')]/a[contains(@class,'pageNow')]/text()").extract()
-                links = sel.xpath("//div[contains(@class,'fanye')]/text()").extract()
+                links = sel.xpath("//div[contains(@class,'fanye')]/a[contains(@class,'pageNow')]/following-sibling::a/attribute::href").extract()
                 print item['page']
+                str=links
                 str = None
                 if(len(links)>0):
                     str =links[0]
@@ -121,4 +122,4 @@ class FangSpider(scrapy.Spider):
     		#print items > a.txt           
     	 #return items
                 if(None!=str):
-                    yield scrapy.Request('http://tieba.baidu.com'+str+'&ajax=1&t=1455292481894', callback=self.parse)
+                    yield scrapy.Request('http://esf.sh.fang.com'+str, callback=self.parse)
