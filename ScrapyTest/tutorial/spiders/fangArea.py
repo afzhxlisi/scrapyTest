@@ -146,8 +146,8 @@ class FangSpider(scrapy.Spider):
         #print sel
         if(len(sel)>0):
             sel = sel[0]
-        else:
-            print response
+        #else:
+            #print response
         href = sel.xpath("//div[contains(@class,'shangQuan')]//p[contains(@id,'shangQuancontain')]//a/attribute::href").extract()
         hreftext = sel.xpath("//div[contains(@class,'shangQuan')]//p[contains(@id,'shangQuancontain')]//a/text()").extract()
         #print len(href)
@@ -156,5 +156,29 @@ class FangSpider(scrapy.Spider):
             yield scrapy.Request('http://esf.sh.fang.com'+href[i], callback=self.parseHouse)
             
     def parseHouse(self,response):
-        sel =  response.xpath("//div[contains(@class,'ml15')]//dd[2]/a/attribute::href")
+        sel =  response.xpath("//div[contains(@class,'ml15')]//dd[2]/a[1]/attribute::href").extract()
+        for i in range(len(sel)):
+            #print sel[i]
+            str = sel[i]
+            print str
+            yield scrapy.Request('http://esf.sh.fang.com'+str, callback=self.parseHouseDetail)
         #print sel
+        
+    def parseHouseDetail(self,response):
+        sel =  response.xpath("//dd[contains(@class,'info')]")[0]
+        price = sel.xpath("//span[contains(@class,'price')]/text()").extract()
+        print price
+        area = sel.xpath("//div[contains(@class,'area')]/p[1]/text()").extract()
+        print area
+        addr = sel.xpath("//p[contains(@class,'mt10')]/a/span/text()").extract()
+        print addr
+        length = min( len(price),len(area),len(addr))
+        file = codecs.open('tencent.json', 'a', encoding='utf-8')
+        for i in range(length):
+            line = json.dumps(price[i], ensure_ascii=False) 
+            file.write(line)
+            line = json.dumps(area[i], ensure_ascii=False)
+            file.write(line) 
+            line = json.dumps(addr[i], ensure_ascii=False) + "\n"
+            file.write(line)
+        file.close()
