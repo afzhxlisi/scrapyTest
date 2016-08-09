@@ -18,7 +18,7 @@ import MySQLdb
 class FangSpider(scrapy.Spider):
     name = "fang"
     allowed_dmains = ["http://esf.sh.fang.com"]
-    start_urls = ["http://esf.sh.fang.com/house-a025-b05235/kw%c6%d6%b6%ab%b6%fe%ca%d6%b7%bf/"]
+    start_urls = ["http://esf.sh.fang.com/"]
 
     #rules = [
     #    Rule(sle(allow=("/p/4479212761\?pn=\d{,4}&ajax=1&t=1455292481894")), follow=True, callback='parse')

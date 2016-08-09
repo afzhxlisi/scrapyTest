@@ -1,2 +1,10 @@
 eclipse.preferences.version=1
+encoding//tutorial/items.py=utf-8
+encoding//tutorial/spiders/fang.py=utf-8
+encoding//tutorial/spiders/fangArea.py=utf-8
+encoding//tutorial/spiders/fangAreaback.py=utf-8
+encoding//tutorial/spiders/fangDitrict.py=utf-8
+encoding//tutorial/spiders/fangGarden.py=utf-8
+encoding//tutorial/spiders/fangHouse.py=utf-8
+encoding//tutorial/spiders/fangHouseDetail.py=utf-8
 encoding//tutorial/spiders/tieba_spider.py=utf-8

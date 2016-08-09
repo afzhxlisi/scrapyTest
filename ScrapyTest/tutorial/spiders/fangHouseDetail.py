@@ -16,13 +16,13 @@ import codecs
 import MySQLdb
 
 class FangSpider(scrapy.Spider):
-    name = "fangHouse"
+    name = "fangHouseDetail"
     allowed_dmains = ["http://esf.sh.fang.com"]
     start_urls = ["http://esf.sh.fang.com/housing"]
 
     
     def start_requests(self):
-        file = codecs.open('url.txt', 'r', encoding='utf-8')
+        file = codecs.open('garden.txt', 'r', encoding='utf-8')
         lines = file.readlines()
         self.start_urls =lines
         for url in self.start_urls:
@@ -34,25 +34,57 @@ class FangSpider(scrapy.Spider):
     #] 
 
     def parse(self,response):
-         #items = [];
-         #for 
         last = response.xpath("//div[contains(@class,'fanye')]//a[contains(@id,'PageControl1_hlk_last')]/attribute::href").extract()
         next = response.xpath("//div[contains(@class,'fanye')]//a[contains(@id,'PageControl1_hlk_next')]/attribute::href").extract()
-        #print last
-        #print next
-        #if next != last:
+        
+        sel =  response.xpath("//dd[contains(@class,'info')]")[0]
+        price = sel.xpath("//span[contains(@class,'price')]/text()").extract()
+        #print price
+        area = sel.xpath("//div[contains(@class,'area')]/p[1]/text()").extract()
+        #print area
+        addr = sel.xpath("//p[contains(@class,'mt10')]/a/span/text()").extract()
+        #print addr
+        length = min( len(price),len(area),len(addr))
+        file = codecs.open('housedetail.txt', 'a', encoding='utf-8')
+        for i in range(length):
+            line = json.dumps(price[i], ensure_ascii=False) 
+            file.write(line)
+            line = json.dumps(area[i], ensure_ascii=False)
+            file.write(line) 
+            line = json.dumps(addr[i], ensure_ascii=False) + "\n"
+            file.write(line)
+        file.close()
+        
         if len(next) >0:    
         #for i in range(len(sel)):
             #print sel[i]
             #str = sel[i]
-            #print next
+            #print last
+            #print next[0]
+            yield scrapy.Request('http://esf.sh.fang.com'+next[0], callback=self.parseNextHouse)
+            #yield scrapy.Request('http://esf.sh.fang.com'+str, callback=self.parseHouseDetail)
+            #yield scrapy.Request('http://esf.sh.fang.com'+line, callback=self.parseHouse)
+        #print sel   
+         
+         #items = [];
+         #for 
+        #last = response.xpath("//div[contains(@class,'fanye')]//a[contains(@id,'PageControl1_hlk_last')]/attribute::href").extract()
+        #next = response.xpath("//div[contains(@class,'fanye')]//a[contains(@id,'PageControl1_hlk_next')]/attribute::href").extract()
+        #print last
+        #print next
+        #if next != last:
+        #if len(next) >0:    
+        #for i in range(len(sel)):
+            #print sel[i]
+            #str = sel[i]
+            #print next[0]
             '''file = codecs.open('url.txt', 'a', encoding='utf-8')
         
             line = next[0]#json.dumps(next[0], ensure_ascii=False) + "\n"
             file.write(line+ "\n")
             file.close()'''
-            #scrapy.Request('http://esf.sh.fang.com'+next[0], callback=self.parseHouse)
-            yield scrapy.Request('http://esf.sh.fang.com'+next[0], callback=self.parseHouse)
+            #yield scrapy.Request('http://esf.sh.fang.com'+next[0], callback=self.parseNextGarden)
+            #yield scrapy.Request('http://esf.sh.fang.com'+next[0], callback=self.parseHouse)
 
 
                 #sel =  response.xpath("//div[contains(@class,'quxian')]")[0]
@@ -125,23 +157,34 @@ class FangSpider(scrapy.Spider):
     def parseNextHouse(self,response):
         last = response.xpath("//div[contains(@class,'fanye')]//a[contains(@id,'PageControl1_hlk_last')]/attribute::href").extract()
         next = response.xpath("//div[contains(@class,'fanye')]//a[contains(@id,'PageControl1_hlk_next')]/attribute::href").extract()
-        #print last
-        #print next
-        #if next != last:
+        
+        sel =  response.xpath("//dd[contains(@class,'info')]")[0]
+        price = sel.xpath("//span[contains(@class,'price')]/text()").extract()
+        #print price
+        area = sel.xpath("//div[contains(@class,'area')]/p[1]/text()").extract()
+        #print area
+        addr = sel.xpath("//p[contains(@class,'mt10')]/a/span/text()").extract()
+        #print addr
+        length = min( len(price),len(area),len(addr))
+        file = codecs.open('housedetail.txt', 'a', encoding='utf-8')
+        for i in range(length):
+            line = json.dumps(price[i], ensure_ascii=False) 
+            file.write(line)
+            line = json.dumps(area[i], ensure_ascii=False)
+            file.write(line) 
+            line = json.dumps(addr[i], ensure_ascii=False) + "\n"
+            file.write(line)
+        file.close()
+        
         if len(next) >0:    
         #for i in range(len(sel)):
             #print sel[i]
             #str = sel[i]
             #print last
             #print next[0]
-            file = codecs.open('urlhouse.txt', 'a', encoding='utf-8')
-            
-            line = next[0]#json.dumps(next[0], ensure_ascii=False) + "\n"
-            file.writelines(line)
-            file.close()
-            #scrapy.Request('http://esf.sh.fang.com'+next[0], callback=self.parseHouse)
+            yield scrapy.Request('http://esf.sh.fang.com'+next[0], callback=self.parseNextHouse)
             #yield scrapy.Request('http://esf.sh.fang.com'+str, callback=self.parseHouseDetail)
-            yield scrapy.Request('http://esf.sh.fang.com'+line, callback=self.parseHouse)
+            #yield scrapy.Request('http://esf.sh.fang.com'+line, callback=self.parseHouse)
         #print sel   
         
     def parseHouseDetail(self,response):
